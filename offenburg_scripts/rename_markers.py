@@ -27,26 +27,51 @@ def _reload_script_modules():
     pass
 
 
-def _rename_markers():
-    print("rename markers called")
+def _rename_markers(marker_mapping):
+    print("Rename markers called with the following mapping:")
+    print(marker_mapping)
+    for original_label, new_label in marker_mapping.items():
+        trajectory_id = qtm.data.object.trajectory.find_trajectory(original_label)
+        if trajectory_id is None:
+            print(f"Did not find trajectory with label {original_label}")
+            continue
+
+        cur_label = qtm.data.object.trajectory.get_label(trajectory_id)
+        qtm.data.object.trajectory.set_label(trajectory_id, new_label)
+        changed_label = qtm.data.object.trajectory.get_label(trajectory_id)
+
+        if changed_label != new_label:
+            print(f"Could not change label from {cur_label} to {new_label}")
+            continue
+
+def _rename_markers_markerset_name_X():
     marker_mapping = {
         "HeadFront": "NewHeadFront",
         "HeadR": "NewHeadR",
     }
-    print(marker_mapping)
+    _rename_markers(marker_mapping)
 
-    for original_label, new_label in marker_mapping.items():
-        trajectory_id = qtm.data.object.trajectory.find_trajectory(original_label)
+def _rename_markers_markerset_name_Y():
+    marker_mapping = {
+        "forfoot_med_right": "forefoot_med_right",
+        "toe_right": "toe_right3",
+    }
+    _rename_markers(marker_mapping)
 
-        cur_label = qtm.data.object.trajectory.get_label(trajectory_id)
-        print(f"Current label: {cur_label}")
-        qtm.data.object.trajectory.set_label(trajectory_id, new_label)
-        new_label = qtm.data.object.trajectory.get_label(trajectory_id)
-        print(f"New label: {new_label}")
+def _rename_markers_markerset_name_Z():
+    marker_mapping = {
+        "original_name": "new_name",
+        "original_name_2": "new_name_2",
+    }
+    _rename_markers(marker_mapping)
+
+
 
 
 def _setup_commands():
-    add_command("rename_markers", _rename_markers)
+    add_command("rename_markers_X", _rename_markers_markerset_name_X)
+    add_command("rename_markers_Y", _rename_markers_markerset_name_Y)
+    add_command("rename_markers_Z", _rename_markers_markerset_name_Z)
 
 
 # endregion
@@ -75,7 +100,8 @@ def add_menu_and_commands():
 
         # setup menu
         menu_id = qtm.gui.insert_menu_submenu(None, "Rename markers menu")
-        add_menu_item(menu_id, "Rename markers", "rename_markers")
+        add_menu_item(menu_id, "Rename markers (markerset X)", "rename_markers_X") # we can add a button, but if we call the commands from the script, we don't really need to
+        add_menu_item(menu_id, "Rename markers (markerset Y)", "rename_markers_Y") 
     except Exception as e:
         try_print_except(str(e), "Press 'Reload scripts' to try again.")
 

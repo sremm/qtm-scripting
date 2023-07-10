@@ -23,7 +23,6 @@ def qtm_is_busy(verbose=False):
         print(f"QTM STATUS: {result_json} status_code: {result_status_code}")
     return result_status_code == 200 and result_json != "Idle"
 
-
 def wait(initial_sleep_time=0.2, sleep_increment=0.05, max_sleep_time=10):
     time_slept = initial_sleep_time
     time.sleep(initial_sleep_time)  # To make sure qtm has started processing
@@ -48,11 +47,11 @@ def send_command(command):
         return False
     return True
 
-def rename_qtm_files(session_root: Path, file_suffix: str):
+def rename_qtm_files(session_root: Path, file_suffix: str, rename_command: str):
     qtm_files = list(session_root.glob(pattern="*.qtm"))
     print(f"Found {len(qtm_files)} qtm files")
     for file in qtm_files:
-        print(f"Processing file: {file}")
+        print(f"Processing file: {file} with command: {rename_command}")
 
         # copy file with new name to avoid overwriting
         # this could also be another folder with the same name or whatever you desire
@@ -61,7 +60,7 @@ def rename_qtm_files(session_root: Path, file_suffix: str):
 
         send_command("close_file")
         qtm_load_file(new_file)
-        send_command("rename_markers")
+        send_command(rename_command)
         send_command("save_file")
         send_command("close_file")
 
@@ -71,9 +70,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="""Rename qtm files in a folder""")
     parser.add_argument("session_root", type=Path, help="Diretory where qtm files are located")
     parser.add_argument("--file_suffix", type=str, default= "_renamed", help="Suffix to add to qtm files")
+    parser.add_argument("--rename_command", type=str, default= "rename_markers_Y", help="Rename command to send to qtm")
     args = parser.parse_args()
 
     session_root = args.session_root.absolute()
     file_suffix = args.file_suffix
+    rename_command = args.rename_command
 
-    rename_qtm_files(session_root, file_suffix)
+    rename_qtm_files(session_root, file_suffix, rename_command)
