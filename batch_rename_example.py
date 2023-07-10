@@ -35,7 +35,7 @@ def wait(initial_sleep_time=0.2, sleep_increment=0.05, max_sleep_time=10):
 
 def qtm_load_file(filename):
     result = requests.post(QTM + LOAD_FILE, json={"FileName": str(filename)})
-    wait()
+    wait(0.4)
     if result.status_code != 200:
         return False
     return True
@@ -59,6 +59,7 @@ def rename_qtm_files(session_root: Path, file_suffix: str):
         new_file = file.parent / (file.stem + file_suffix + file.suffix)
         shutil.copyfile(file, new_file)
 
+        send_command("close_file")
         qtm_load_file(new_file)
         send_command("rename_markers")
         send_command("save_file")
