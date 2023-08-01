@@ -64,6 +64,7 @@ def _rename_markers_sports_markerset():
         "WaistLFront": "Q_WaistLFront",
         "RThighFrontLow": "Q_RThighFrontLow",
         "LThighFrontLow": "Q_LThighFrontLow",
+        "LTightFrontLow": "Q_LThighFrontLow", # there was a typo for this in source data
         "LKneeIn": "Q_LKneeIn",
         "RKneeIn": "Q_RKneeIn",
         "LKneeOut": "Q_LKneeOut",
